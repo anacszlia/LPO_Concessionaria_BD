@@ -9,34 +9,37 @@ import java.util.List;
 import java.util.Optional;
 import model.Cliente;
 import model.Veiculo;
+import javax.persistence.*;
+import javax.swing.*;
 
 /**
  *
  * @author vanessalagomachado
  */
-public class VeiculoDAO {
-
-    List<Veiculo> lista;
-
-    public VeiculoDAO() {
-        lista = new ArrayList<>();
-    }
-
-    public void addVeiculo(Veiculo obj) {
-        lista.add(obj);
-    }
-
-    public void removerVeiculo(Veiculo obj) {
-        lista.remove(obj);
-    }
+public class VeiculoDAO extends PersistenciaJPA {
 
     public List<Veiculo> listaVeiculos() {
-        return lista;
+    EntityManager em = getEntityManager();
+    try {
+        TypedQuery<Veiculo> query =
+        em.createQuery("SELECT v FROM Veiculo v", Veiculo.class);
+        return query.getResultList();
+    } 
+    catch (Exception e) {
+        e.printStackTrace();
+        return null;
     }
-
+}
     public Optional<Veiculo> buscarPorPlaca(String placa) {
-        return lista.stream()
-                .filter(p -> p.getPlaca().equals(placa))
-                .findFirst();
+        EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Veiculo> query = em.createQuery(
+                    "SELECT v FROM Veiculo v WHERE v.placa = :placa", Veiculo.class);
+                    query.setParameter("placa", placa);
+            return query.getResultList().stream().findFirst();
+
+        } finally {
+        em.close();
     }
+}
 }

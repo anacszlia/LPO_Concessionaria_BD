@@ -141,7 +141,11 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
         
         Veiculo novoVeiculo = telaCadastro.getVeiculo();
         //JOptionPane.showMessageDialog(rootPane, novoVeiculo);
-        dao.addVeiculo(novoVeiculo);
+        try {
+            dao.persist(novoVeiculo);
+        } catch (Exception ex) {
+            System.out.println("Erro ao castrar o veículo "+novoVeiculo.toString()+"Erro:"+ex);
+        }
         loadTabelaVeiculos();
     }//GEN-LAST:event_btnNovoActionPerformed
 
@@ -159,7 +163,11 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
             Veiculo obj_vendedor = (Veiculo) dao.buscarPorPlaca((String)tblVeiculos.getModel().getValueAt(tblVeiculos.getSelectedRow(), 0)).get();
             int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover "+obj_vendedor+"?");
             if(op_remover == JOptionPane.YES_OPTION){
-                dao.removerVeiculo(obj_vendedor);
+            try {
+                dao.remover(obj_vendedor);
+            } catch (Exception ex) {
+                System.out.println("Erro ao remover veículo "+obj_vendedor+"\n Erro: "+ex);
+            }
                 JOptionPane.showMessageDialog(rootPane, "Veiculo removido com sucesso... ");
                 loadTabelaVeiculos();
             }
@@ -176,6 +184,12 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
             telaEdicao.setVeiculo(obj_vendedor);
             
             telaEdicao.setVisible(true);
+            
+            try {
+                dao.persist(telaEdicao.getVeiculo());
+            } catch (Exception ex) {
+                System.out.println("Erro ao editar veículo\n Erro: "+ex);
+            }
             loadTabelaVeiculos();
             
             

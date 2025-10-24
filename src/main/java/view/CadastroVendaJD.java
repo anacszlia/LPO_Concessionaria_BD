@@ -52,6 +52,14 @@ public class CadastroVendaJD extends javax.swing.JDialog {
         loadVeiculos();
         
         txtDataVenda.setText(LocalDateTime.now().format(formatter)); // Preenche data atual
+        
+        // Listener para atualizar valor quando veículo for alterado
+        cmbVeiculo.addActionListener(e -> {
+            Veiculo veiculoSelecionado = (Veiculo) cmbVeiculo.getSelectedItem();
+            if(veiculoSelecionado != null){
+                txtValor.setText(String.valueOf(veiculoSelecionado.getValor()));
+            }
+        });
     }
     
     public void loadFormaPgto(){
@@ -342,5 +350,20 @@ public class CadastroVendaJD extends javax.swing.JDialog {
 
     public void setVenda(Venda venda) {
         this.venda = venda;
+        if(venda != null){
+            carregarDadosVenda();
+        }
+    }
+    
+    private void carregarDadosVenda(){
+        if(venda != null){
+            txtDataVenda.setText(venda.getDataVenda().format(formatter));
+            txtValor.setText(String.valueOf(venda.getValorVenda()));
+            cmbFormaContrato.setSelectedItem(venda.getFormaContrato());
+            cmbFormaPgto.setSelectedItem(venda.getFormaPgto());
+            cmbCliente.setSelectedItem(venda.getCliente());
+            cmbVendedor.setSelectedItem(venda.getVendedor());
+            cmbVeiculo.setSelectedItem(venda.getVeiculo());
+        }
     }
 }

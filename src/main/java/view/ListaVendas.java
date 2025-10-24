@@ -34,6 +34,7 @@ public class ListaVendas extends javax.swing.JFrame {
        modelo.setNumRows(0);
        for(Venda obj: dao.listaVendas()){
            Object[] linha = {
+            obj.getId(),
             obj.getDataVenda().format(DateTimeFormatter.ISO_DATE),
             obj.getVeiculo(),
             obj.getCliente()
@@ -78,20 +79,20 @@ public class ListaVendas extends javax.swing.JFrame {
 
         tblVendas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Data Venda", "Veículo", "Cliente"
+                "ID", "Data Venda", "Veículo", "Cliente"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -196,20 +197,22 @@ public class ListaVendas extends javax.swing.JFrame {
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         // TODO add your handling code here:
          if(tblVendas.getSelectedRow() != -1){
-            Venda obj_venda = (Venda) dao.buscarPorId((int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0)).get();
+            int id = (int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0);
+            Venda obj_venda = (Venda) dao.buscarPorId(id).get();
             int op_remover = JOptionPane.showConfirmDialog(rootPane, "Tem certeza que deseja remover "+obj_venda+"?");
             if(op_remover == JOptionPane.YES_OPTION){
                 try {
                     dao.remover(obj_venda);
+                    JOptionPane.showMessageDialog(rootPane, "Venda removida com sucesso... ");
+                    loadVendas();
                 } catch (Exception ex) {
                     System.out.println("Erro ao remover venda "+obj_venda+"\n Erro: "+ex);
+                    JOptionPane.showMessageDialog(rootPane, "Erro ao remover venda: "+ex.getMessage());
                 }
-                JOptionPane.showMessageDialog(rootPane, "Venda removida com sucesso... ");
-                loadVendas();
             }
             
         } else {
-            JOptionPane.showMessageDialog(rootPane, "Selecione um venda");
+            JOptionPane.showMessageDialog(rootPane, "Selecione uma venda");
         }
         
     }//GEN-LAST:event_btnRemoverActionPerformed
@@ -217,23 +220,29 @@ public class ListaVendas extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         // TODO add your handling code here:
          if(tblVendas.getSelectedRow() != -1){
-            Venda obj_venda = (Venda) dao.buscarPorId((int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0)).get();
-            CadastroVendaJD novat = new CadastroVendaJD(this,rootPaneCheckingEnabled);
+            int id = (int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0);
+            Venda obj_venda = (Venda) dao.buscarPorId(id).get();
+            CadastroVendaJD novat = new CadastroVendaJD(this, true);
             novat.setVenda(obj_venda);
             
-            novat.setVisible(rootPaneCheckingEnabled);
+            novat.setVisible(true);
             
+            Venda vendaEditada = novat.getVenda();
+            if(vendaEditada != null){
                 try {
-                    dao.persist(novat.getVenda());
+                    dao.persist(vendaEditada);
+                    //se clicar em veiculo pegar o get do valor e reatribuir
+                    
+                    JOptionPane.showMessageDialog(rootPane, "Venda editada com sucesso... ");
+                    loadVendas();
                 } catch (Exception ex) {
-                    System.out.println("Erro ao editar  r venda "+obj_venda+"\n Erro: "+ex);
+                    System.out.println("Erro ao editar venda "+obj_venda+"\n Erro: "+ex);
+                    JOptionPane.showMessageDialog(rootPane, "Erro ao editar venda: "+ex.getMessage());
                 }
-                JOptionPane.showMessageDialog(rootPane, "Venda editada com sucesso... ");
-                loadVendas();
-            
+            }
             
         } else {
-            JOptionPane.showMessageDialog(rootPane, "Selecione um venda");
+            JOptionPane.showMessageDialog(rootPane, "Selecione uma venda");
         }
         
     }//GEN-LAST:event_btnEditarActionPerformed
@@ -242,7 +251,8 @@ public class ListaVendas extends javax.swing.JFrame {
         // TODO add your handling code here:
         
         if(tblVendas.getSelectedRow() !=-1){
-            Venda obj_venda = (Venda) dao.buscarPorId((int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0)).get();
+            int id = (int)tblVendas.getModel().getValueAt(tblVendas.getSelectedRow(), 0);
+            Venda obj_venda = (Venda) dao.buscarPorId(id).get();
             JOptionPane.showMessageDialog(rootPane, obj_venda.exibirDados());
             
         }

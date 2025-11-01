@@ -26,6 +26,7 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
         
         dao = new VeiculoDAO();
         loadTabelaVeiculos();
+        verificaDisponibilidade();
     }
 
     /**
@@ -48,20 +49,20 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
 
         tblVeiculos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Placa", "Marca", "Modelo", "Ano Modelo"
+                "Placa", "Marca", "Modelo", "Ano Modelo", "Disponível"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -144,6 +145,7 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
         Veiculo novoVeiculo = telaCadastro.getVeiculo();
         try {
             //JOptionPane.showMessageDialog(rootPane, novoVeiculo);
+            novoVeiculo.setDisponivel(true);
             dao.persist(novoVeiculo);
         } catch (Exception ex) {
             System.out.println("Erro ao castrar o veículo "+novoVeiculo.toString()+" \n Erro: "+ex);
@@ -167,11 +169,12 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
             if(op_remover == JOptionPane.YES_OPTION){
                 try {
                     dao.remover(obj_vendedor);
+                    JOptionPane.showMessageDialog(rootPane, "Veículo removido com sucesso!");
+                    loadTabelaVeiculos();
                 } catch (Exception ex) {
                     System.out.println("Erro ao remover veículo "+obj_vendedor+"\n Erro: "+ex);
+                    JOptionPane.showMessageDialog(rootPane, "Erro ao remover veículo: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
-                JOptionPane.showMessageDialog(rootPane, "Veiculo removido com sucesso... ");
-                loadTabelaVeiculos();
             }
             
         } else {
@@ -251,11 +254,40 @@ public class ListaVeiculoJF extends javax.swing.JFrame {
                 obj.getPlaca(), 
                     obj.getMarca(), 
                     obj.getModelo(), 
-                    obj.getAnoModelo()
+                    obj.getAnoModelo(),
+                    obj.getDisponivel() != null ? obj.getDisponivel() : false
+                    
                             };
             modelo.addRow(linha);
         }
         
+    }
+    
+    public void verificaDisponibilidade(){
+        //escuta do evento e-> {} monitorar um evento e realizar determinada função
+        tblVeiculos.getModel().addTableModelListener(e ->{
+            int row = e.getFirstRow();
+            int col = e.getColumn();
+            
+            if(col==4){
+                String Placa= (String)tblVeiculos.getValueAt(row, 0);
+                dao.buscarPorPlaca(Placa).ifPresent(v -> {
+                    int opcao=JOptionPane.showConfirmDialog(rootPane, "Tem certeza que quer editar a disponibilidade?\n");
+                    if(opcao == JOptionPane.YES_OPTION){
+                        Boolean disp=(Boolean)tblVeiculos.getValueAt(row, 4);
+                        v.setDisponivel(disp);
+                        try {
+                            dao.persist(v);
+                        } catch (Exception ex) {
+                            System.out.println("Erro ao editar a disponibilidade do veiculo"+ v + "\nErro:"+ ex);
+                        }
+                    }   
+                
+                });
+            }
+        
+        
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

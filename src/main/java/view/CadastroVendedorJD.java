@@ -66,6 +66,12 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
 
         jLabel2.setText("CPF");
 
+        txtCPF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCPFActionPerformed(evt);
+            }
+        });
+
         jLabel3.setText("Data Nascimento");
 
         jLabel4.setText("Telefone");
@@ -171,13 +177,22 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
 
         
         try{
+            // Valida antes de persistir
+            String cpff = txtCPF.getText();
+            if (!vendedor.validacpf(cpff)) {
+                JOptionPane.showMessageDialog(rootPane, "CPF INVALIDO");
+                return;
+            }
+            
             this.vendedor.setNome(txtNome.getText());
-            this.vendedor.setCPF(txtCPF.getText());
+            
+            this.vendedor.setcpf(txtCPF.getText());
             // sintaxe para conversão: LocalDate.parse(String com data, máscara)
             this.vendedor.setDataNascimento(LocalDate.parse(txtDtNascimento.getText(), formatter));
             this.vendedor.setTelefone(txtTelefone.getText());
             this.vendedor.setSalario(Double.parseDouble(txtSalario.getText()));
             this.vendedor.setComissao(Double.parseDouble(txtComissao.getText()));
+            
             
             this.dispose();
         } catch (DateTimeParseException e1){
@@ -190,6 +205,12 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
         
         
     }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void txtCPFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCPFActionPerformed
+        // TODO add your handling code here:
+        String cpf = txtCPF.getText().replaceAll("[^0-9]", ""); // Remove formatação
+        txtCPF.setText(model.Pessoa.imprimecpf(cpf)); // Formata e exibe
+    }//GEN-LAST:event_txtCPFActionPerformed
 
     /**
      * @param args the command line arguments
@@ -240,7 +261,7 @@ public class CadastroVendedorJD extends javax.swing.JDialog {
     public void setVendedor(Vendedor vendedor) {
         this.vendedor = vendedor;
         txtNome.setText(vendedor.getNome());
-        txtCPF.setText(vendedor.getCPF());
+        txtCPF.setText(vendedor.getcpf());
         txtComissao.setText(""+vendedor.getComissao());
         txtSalario.setText(""+vendedor.getSalario());
         txtTelefone.setText(vendedor.getTelefone());

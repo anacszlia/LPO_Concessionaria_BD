@@ -246,7 +246,7 @@ public class ListaVendedorJF extends javax.swing.JFrame {
         for(Vendedor vendedor: dao.listaVendedores()){
             Object[] linha = {
                 vendedor, 
-                    vendedor.getCPF(), 
+                    vendedor.getcpf(), 
                     vendedor.getSalario(), 
                     vendedor.getComissao()
                             };

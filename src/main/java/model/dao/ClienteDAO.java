@@ -15,6 +15,18 @@ import model.Veiculo;
  * @author vanessalagomachado
  */
 public class ClienteDAO extends PersistenciaJPA{
+    
+    @Override
+    public void persist(Object o) throws Exception {
+        if (o instanceof Cliente) {
+            Cliente cliente = (Cliente) o;
+            if (cliente.getcpf() != null && !cliente.validacpf(cliente.getcpf().replaceAll("[^0-9]", ""))) {
+                throw new IllegalArgumentException("CPF inválido: " + cliente.getcpf());
+            }
+        }
+        super.persist(o);
+    }
+    
     public List<Cliente> listaClientes(){
     EntityManager em = getEntityManager();
         try {

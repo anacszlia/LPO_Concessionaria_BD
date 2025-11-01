@@ -17,6 +17,17 @@ import model.Vendedor;
  */
 public class VendedorDAO extends PersistenciaJPA{
     
+    @Override
+    public void persist(Object o) throws Exception {
+        if (o instanceof Vendedor) {
+            Vendedor vendedor = (Vendedor) o;
+            if (vendedor.getcpf() != null && !vendedor.validacpf(vendedor.getcpf().replaceAll("[^0-9]", ""))) {
+                throw new IllegalArgumentException("CPF inválido: " + vendedor.getcpf());
+            }
+        }
+        super.persist(o);
+    }
+    
     public List<Vendedor> listaVendedores(){
     EntityManager em = getEntityManager();
         try {

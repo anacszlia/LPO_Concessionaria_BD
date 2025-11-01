@@ -147,6 +147,7 @@ public class ListaClienteJF extends javax.swing.JFrame {
         Cliente novo = telaCadastro.getCliente();
         //JOptionPane.showMessageDialog(rootPane, novoVendedor);
         try {
+            
             dao.persist(novo);
 
         } catch (Exception ex) {
@@ -259,7 +260,7 @@ public class ListaClienteJF extends javax.swing.JFrame {
         for (Cliente obj : dao.listaClientes()) {
             Object[] linha = {
                 obj,
-                obj.getCPF()
+                obj.getcpf()
             };
             modelo.addRow(linha);
         }

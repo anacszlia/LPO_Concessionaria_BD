@@ -81,14 +81,11 @@ public class PersistenciaJPA implements InterfaceBD {
             if (entity.getTransaction().isActive()) {
                 entity.getTransaction().rollback();
             }
+            throw e; 
         }
     }
 
-    /*
-    Todos os métodos agora chamam getEntityManager() 
-    para garantir que o EntityManager esteja sempre aberto e 
-    pronto para uso.
-     */
+    
     public EntityManager getEntityManager() {
         if (entity == null || !entity.isOpen()) {
             entity = factory.createEntityManager();

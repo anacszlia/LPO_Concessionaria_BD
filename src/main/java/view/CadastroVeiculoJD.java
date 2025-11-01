@@ -31,11 +31,15 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
      */
     public CadastroVeiculoJD(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
-        loadMarcas();
-        loadModelos();
-        
-        veiculo = new Veiculo();
+        try {
+            initComponents();
+            loadMarcas();
+            loadModelos();
+            veiculo = new Veiculo();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao carregar tela: " + e.getMessage());
+        }
     }
 
     /**
@@ -198,7 +202,14 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
 
         
         try{
-            veiculo.setPlaca(txtPlaca.getText());
+            
+            // Valida antes de persistir
+            String placa = txtPlaca.getText();
+            if (!veiculo.validaPlaca(placa)) {
+                JOptionPane.showMessageDialog(rootPane, "Placa inválida!");
+                return;
+            }
+            veiculo.setPlaca(placa);
             veiculo.setCor(txtCor.getText());
             veiculo.setMarca((Marca)cmbMarca.getSelectedItem());
             veiculo.setModelo((Modelo)cmbModelo.getSelectedItem());
@@ -206,6 +217,7 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
             veiculo.setAnoModelo(Integer.parseInt(txtAnoModelo.getText().trim()));
             veiculo.setValor(Double.parseDouble(txtValor.getText().trim().replace(",", ".")));
             
+            veiculo.setDisponivel(true); // Define como disponível por padrão
             this.dispose();
         } catch (NumberFormatException e1){
             JOptionPane.showMessageDialog(rootPane, "Valor Inválido\n"+e1);
@@ -295,12 +307,9 @@ public class CadastroVeiculoJD extends javax.swing.JDialog {
 
     private void loadModelos() {
         cmbModelo.removeAllItems();
-//        for(Modelo obj: Modelo.values()){
-//            cmbModelo.addItem(obj);
-//        }
-        List<Modelo> modelos = Arrays.asList(Modelo.values());
-        modelos.forEach(obj -> cmbModelo.addItem(obj));
-        
+        for(Modelo obj: Modelo.values()){
+            cmbModelo.addItem(obj);
+        }
     }
     
     

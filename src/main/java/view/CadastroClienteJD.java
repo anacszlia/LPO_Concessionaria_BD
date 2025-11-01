@@ -65,6 +65,12 @@ public class CadastroClienteJD extends javax.swing.JDialog {
 
         jLabel2.setText("CPF");
 
+        txtCPF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCPFActionPerformed(evt);
+            }
+        });
+
         jLabel3.setText("Data Nascimento");
 
         jLabel4.setText("Telefone");
@@ -154,8 +160,20 @@ public class CadastroClienteJD extends javax.swing.JDialog {
 
         
         try{
+            // Valida antes de persistir
+            String cpff = txtCPF.getText();
+            if (!cliente.validacpf(cpff)) {
+                JOptionPane.showMessageDialog(rootPane, "CPF INVALIDO");
+                return;
+            }
+            
+
             this.cliente.setNome(txtNome.getText());
-            this.cliente.setCPF(txtCPF.getText());
+            
+            //formata o cpf pra ficar bonito 
+             //cpff = imprimecpf(txtCPF.getText());
+             //ff = model.Pessoa.imprimecpf(txtCPF.getText());
+            this.cliente.setcpf(txtCPF.getText());
             // sintaxe para conversão: LocalDate.parse(String com data, máscara)
             this.cliente.setDataNascimento(LocalDate.parse(txtDtNascimento.getText(), formatter));
             this.cliente.setTelefone(txtTelefone.getText());
@@ -170,6 +188,13 @@ public class CadastroClienteJD extends javax.swing.JDialog {
         
         
     }//GEN-LAST:event_btnSalvarActionPerformed
+
+    private void txtCPFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCPFActionPerformed
+        String cpf = txtCPF.getText().replaceAll("[^0-9]", ""); // Remove formatação
+        if (cliente.validacpf(cpf)) {
+            txtCPF.setText(model.Pessoa.imprimecpf(cpf)); // Formata e exibe
+        }
+    }//GEN-LAST:event_txtCPFActionPerformed
 
     /**
      * @param args the command line arguments
@@ -241,7 +266,7 @@ public class CadastroClienteJD extends javax.swing.JDialog {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
         txtNome.setText(cliente.getNome());
-        txtCPF.setText(cliente.getCPF());
+        txtCPF.setText(cliente.getcpf());
        
         txtTelefone.setText(cliente.getTelefone());
         txtDtNascimento.setText(cliente.getDataNascimento().format(formatter));

@@ -42,13 +42,27 @@ public class Veiculo implements Serializable {
     @Column(name = "vei_modelo")
     private Modelo modelo;
     
+    @Column(name = "vei_disponivel")
+    private Boolean disponivel = true; // Inicializa como disponível
 
+    public Boolean getDisponivel(){
+     return disponivel; 
+    }
+    public void setDisponivel(Boolean disponibildade){
+        this.disponivel=disponibildade;
+    }
     public String getPlaca() {
         return placa;
     }
 
     public void setPlaca(String placa) {
-        this.placa = placa;
+        if(!validaPlaca(placa)){
+            System.out.println("Placa inválida\n");
+        }
+        else{
+          this.placa = placa;  
+        }
+        
     }
 
     public String getCor() {
@@ -113,8 +127,16 @@ public class Veiculo implements Serializable {
         aux += "Modelo: "+modelo+"\n";
         aux += "Marca: "+marca+"\n";
         aux += "Valor: R$"+valor+"\n";
+        aux += (disponivel != null && disponivel) ? "Disponível\n" : "Não disponível\n";
+        
 
         return aux;
+    }
+     public boolean validaPlaca(String p){
+        return(Character.isLetter(p.charAt(0))&& Character.isLetter(p.charAt(1))&&
+                Character.isLetter(p.charAt(2))
+                && Character.isDigit(p.charAt(3)) && Character.isLetterOrDigit(p.charAt(4)) 
+               && Character.isDigit(p.charAt(5)) && Character.isDigit(p.charAt(6)));
     }
     
     
